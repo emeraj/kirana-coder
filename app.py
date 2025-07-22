@@ -279,10 +279,13 @@ with gr.Blocks(css=css) as demo:
 
                     # Right Column
                     with antd.Col(span=24, md=16):
-                        with antd.Card(title="Output",
-                                       elem_style=dict(height="100%"),
-                                       styles=dict(body=dict(height="100%")),
-                                       elem_id="output-container"):
+                        with antd.Card(
+                                title="Output",
+                                elem_style=dict(height="100%",
+                                                display="flex",
+                                                flexDirection="column"),
+                                styles=dict(body=dict(height=0, flex=1)),
+                                elem_id="output-container"):
                             # Output Container Extra
                             with ms.Slot("extra"):
                                 with ms.Div(elem_id="output-container-extra"):
