@@ -68,15 +68,20 @@ Remember to only return code for the App.jsx file and nothing else. The resultin
 EXAMPLES = [
     {
         "title":
-        "Qwen，Start！",
+        "Bouncing ball",
         "description":
-        "Help me design an interface with a purple button that says 'Qwen, Start!'. When the button is clicked, display a countdown from 5 in a very large font for 5 seconds.",
+        "Make a page in HTML that shows an animation of a ball bouncing in a rotating hypercube.",
+    },
+    {
+        "title": "Pokémon SVG",
+        "description":
+        "Help me to generate an SVG of 5 Pokémons, include details."
     },
     {
         "title":
-        "Spam with emojis!",
+        "Strawberry card",
         "description":
-        "Write code in a single HTML file: Capture the click event, place a random number of emojis at the click position, and add gravity and collision effects to each emoji."
+        """How many "r"s are in the word "strawberry"? Make a cute little card!"""
     },
     {
         "title":
