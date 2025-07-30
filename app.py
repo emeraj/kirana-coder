@@ -21,10 +21,10 @@ react_imports = {
     "@react-three/fiber": "https://esm.sh/@react-three/fiber@9.2.0",
     "@react-three/drei": "https://esm.sh/@react-three/drei@10.5.2",
     "@tailwindcss/browser": "https://esm.sh/@tailwindcss/browser@4.1.11",
-    "react": "https://esm.sh/react@19.1.0",
-    "react/": "https://esm.sh/react@19.1.0/",
-    "react-dom": "https://esm.sh/react-dom@19.1.0",
-    "react-dom/": "https://esm.sh/react-dom@19.1.0/"
+    "react": "https://esm.sh/react@^19.0.0",
+    "react/": "https://esm.sh/react@^19.0.0/",
+    "react-dom": "https://esm.sh/react-dom@^19.0.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.0.0/"
 }
 
 
