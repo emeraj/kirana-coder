@@ -4,8 +4,13 @@ import gradio as gr
 import modelscope_studio.components.antd as antd
 import modelscope_studio.components.base as ms
 import modelscope_studio.components.pro as pro
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+import time
 from openai import OpenAI
 from config import API_KEY, MODEL, SYSTEM_PROMPT, ENDPOINT, EXAMPLES, DEFAULT_LOCALE, DEFAULT_THEME
+
+app = FastAPI()
 
 client = OpenAI(api_key=API_KEY, base_url=ENDPOINT)
 
@@ -26,7 +31,46 @@ react_imports = {
     "react-dom": "https://esm.sh/react-dom@^19.0.0",
     "react-dom/": "https://esm.sh/react-dom@^19.0.0/"
 }
+@app.post("/update-system-prompt")
+async def update_system_prompt(request: Request):
+    global stored_system_prompt
+    data = await request.json()
+    new_prompt = data.get("system_prompt", "")
+    if not new_prompt:
+        return JSONResponse(content={"error": "Missing system_prompt"}, status_code=400)
 
+    stored_system_prompt = new_prompt
+    return {"message": "System prompt updated successfully"}
+    
+@app.post("/generate-stream")
+async def generate_stream(request: Request):
+    global stored_system_prompt
+
+    data = await request.json()
+    prompt = data.get("prompt", "")
+
+    messages = [
+        {"role": "system", "content": stored_system_prompt},
+        {"role": "user", "content": prompt}
+    ]
+
+    generator = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        stream=True
+    )
+
+    def stream_response():
+        try:
+            for chunk in generator:
+                content = chunk.choices[0].delta.content
+                if content:
+                    yield f"data: {json.dumps({'content': content})}\n\n"
+                    time.sleep(0.01)
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(stream_response(), media_type="text/event-stream")
 
 class GradioEvents:
 
@@ -452,6 +496,8 @@ with gr.Blocks(css=css) as demo:
                        outputs=[submit_btn, download_btn
                                 ]).then(fn=GradioEvents.close_modal,
                                         outputs=[output_code_drawer])
+
+    
 
 if __name__ == "__main__":
     demo.queue(default_concurrency_limit=100,
