@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌍 قارة أفريقيا - البطاقات التفاعلية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri&family=Reem+Kufi&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      font-family: 'Cairo', sans-serif;
+      padding: 30px;
+      direction: rtl;
+      color: #333;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, #3498db, #2c3e50);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: #7f8c8d;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .search-container {
+      max-width: 500px;
+      margin: 20px auto 40px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1.1rem;
+      border: 2px solid #3498db;
+      border-radius: 30px;
+      outline: none;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
+    }
+
+    .search-input:focus {
+      border-color: #2980b9;
+      box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .continent-card {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .continent-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .continent-card::before {
+      content: "🌍";
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      font-size: 120px;
+      opacity: 0.1;
+    }
+
+    .continent-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .continent-flag {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #3498db, #2c3e50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: white;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .continent-info h2 {
+      font-size: 2rem;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .continent-stats {
+      display: flex;
+      gap: 30px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 15px;
+      text-align: center;
+      min-width: 180px;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    .stat-item h3 {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+
+    .stat-item p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .continent-description {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin: 25px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border-right: 4px solid #3498db;
+    }
+
+    .countries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 40px;
+    }
+
+    .country-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid #e1e8ed;
+    }
+
+    .country-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(52, 152, 219, 0.25);
+      border-color: #3498db;
+    }
+
+    .country-card::before {
+      content: attr(data-number);
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 45px;
+      box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
+    }
+
+    .country-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .country-flag {
+      width: 50px;
+      height: 35px;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #e74c3c, #f39c12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .country-name {
+      font-size: 1.4rem;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .country-info {
+      margin: 15px 0;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #ecf0f1;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #7f8c8d;
+    }
+
+    .info-value {
+      color: #2c3e50;
+      font-weight: 500;
+    }
+
+    .country-fact {
+      background: #e3f2fd;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 0.95rem;
+      border-right: 3px solid #3498db;
+      color: #2c3e50;
+    }
+
+    .handwriting {
+      font-family: 'Amiri', serif;
+      font-size: 18px;
+      color: #3498db;
+      text-decoration: none;
+      margin: 0 12px;
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+
+    .handwriting:hover {
+      transform: rotate(-2deg) scale(1.05);
+      text-shadow: 1px 1px 2px rgba(52, 152, 219, 0.3);
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+    }
+
+    footer p {
+      font-family: 'Reem Kufi', sans-serif;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 18px;
+      background: #f8f9fa;
+      border-radius: 15px;
+    }
+
+    .dark-mode-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(135deg, #0F3460 0%, #1a1a2e 100%);
+      color: #f1f1f1;
+    }
+
+    body.dark-mode .continent-card,
+    body.dark-mode .country-card {
+      background: #16213E;
+      border-color: #2D4263;
+    }
+
+    body.dark-mode .search-input {
+      background: #2D4263;
+      color: white;
+      border-color: #34A853;
+    }
+
+    body.dark-mode .continent-description {
+      background: rgba(45, 66, 99, 0.3);
+      color: #ccc;
+    }
+
+    body.dark-mode .country-fact {
+      background: rgba(52, 168, 83, 0.1);
+      color: #ccc;
+      border-right-color: #34A853;
+    }
+
+    body.dark-mode .stat-item {
+      background: linear-gradient(45deg, #34A853, #0F9D58);
+    }
+
+    body.dark-mode .dark-mode-toggle {
+      background: #34A853;
+    }
+
+    .points-display {
+      background: linear-gradient(45deg, #3498db, #8AB4F8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+      margin-bottom: 20px;
+    }
+
+    body.dark-mode .points-display {
+      background: linear-gradient(45deg, #34A853, #81C995);
+      box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
+    }
+
+    .achievements-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      max-width: 300px;
+    }
+
+    body.dark-mode .achievements-panel {
+      background: #2D4263;
+    }
+
+    .achievements-panel.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .achievement-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      background: rgba(52, 152, 219, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body.dark-mode .achievement-item {
+      background: rgba(52, 168, 83, 0.1);
+    }
+
+    .achievement-icon {
+      font-size: 20px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .continent-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .continent-stats {
+        justify-content: center;
+      }
+      
+      .countries-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .points-display {
+        font-size: 14px;
+        padding: 8px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🌍 قارة أفريقيا</h1>
+    <p>ثاني أكبر قارة في العالم من حيث المساحة والسكان، تضم 54 دولة متنوعة ثقافياً وطبيعياً</p>
+    <div class="points-display" id="pointsDisplay">
+      🏆 النقاط: <span id="pointsValue">0</span>
+    </div>
+    <div class="search-container">
+      <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن دولة أو معلومة...">
+    </div>
+  </div>
+
+  <div class="continent-card">
+    <div class="continent-header">
+      <div class="continent-flag">🌍</div>
+      <div class="continent-info">
+        <h2>أفريقيا</h2>
+        <p>القارة السوداء - موطن الحضارات القديمة والتنوع البيولوجي الفريد</p>
+      </div>
+    </div>
+    
+    <div class="continent-stats">
+      <div class="stat-item">
+        <h3>30.37 مليون</h3>
+        <p>كم² - المساحة</p>
+      </div>
+      <div class="stat-item">
+        <h3>1.3 مليار</h3>
+        <p>عدد السكان</p>
+      </div>
+      <div class="stat-item">
+        <h3>54</h3>
+        <p>دولة</p>
+      </div>
+    </div>
+    
+    <div class="continent-description">
+      <p>تقع القارة الأفريقية في كل من نصفي الكرة الجنوبي والشمالي، وتُحاط بالمحيط الأطلسي من الغرب والمحيط الهندي من الشرق والمتوسط والبحر الأحمر من الشمال. تُعرف أفريقيا بأهميتها التاريخية كمهد للحضارات القديمة، ومناخها الاستوائي المتنوع، وتنوعها البيولوجي الفريد الذي يضم العديد من الأنواع المهددة بالانقراض مثل الفيل الأفريقي والأسد والحمار الوحشي.</p>
+    </div>
+    
+    <h3 style="color: #2c3e50; margin: 30px 0 20px; font-size: 1.5rem;">الدول الأفريقية:</h3>
+    
+    <div class="countries-grid" id="countriesGrid">
+      <!-- الدول سيتم تحميلها هنا -->
+    </div>
+  </div>
+
+  <div class="achievements-panel" id="achievementsPanel">
+    <h3>🏆 الإنجازات</h3>
+    <div id="achievementsList"></div>
+  </div>
+
+  <footer>
+    <p style="font-family: 'Reem Kufi', sans-serif;">روابط مرسومة بخط القلب:</p>
+    <div style="margin-top: 10px;">
+      <a href="#" class="handwriting">الهوية الفنية</a> /
+      <a href="#" class="handwriting">الرمزية والثقافة</a> /
+      <a href="#" class="handwriting">الشاعرية البصرية</a> /
+      <a href="#" class="handwriting">تجربة المستخدم</a>
+    </div>
+  </footer>
+
+  <button class="dark-mode-toggle" id="darkModeToggle">🌙</button>
+
+  <script>
+    // بيانات الدول الأفريقية (54 دولة)
+    const africanCountries = [
+      {
+        id: 1,
+        name: 'مصر',
+        capital: 'القاهرة',
+        population: '104 مليون',
+        currency: 'جنيه مصري',
+        flag: '🇪🇬',
+        fact: 'موطن أهرامات الجيزة وحديقة الأحياء المائية بأسوان، إحدى عجائب الدنيا السبع الحديثة'
+      },
+      {
+        id: 2,
+        name: 'نيجيريا',
+        capital: 'أبوجا',
+        population: '211 مليون',
+        currency: 'نيرة نيجيرية',
+        flag: '🇳🇬',
+        fact: 'أكبر اقتصاد أفريقي وأكبر منتج للنفط في القارة، موطن ثقافة النول'
+      },
+      {
+        id: 3,
+        name: 'جنوب أفريقيا',
+        capital: 'كيب تاون',
+        population: '60 مليون',
+        currency: 'راند جنوب أفريقي',
+        flag: '🇿🇦',
+        fact: 'الدولة الوحيدة في العالم التي لديها ثلاث عواصم، موطن الرم في الكاب'
+      },
+      {
+        id: 4,
+        name: 'المغرب',
+        capital: 'الرباط',
+        population: '37 مليون',
+        currency: 'درهم مغربي',
+        flag: '🇲🇦',
+        fact: 'موطن مدينة مراكش التاريخية وصحراء الصحراء الكبرى، جزء من طريق الحرير'
+      },
+      {
+        id: 5,
+        name: 'الجزائر',
+        capital: 'الجزائر',
+        population: '44 مليون',
+        currency: 'دينار جزائري',
+        flag: '🇩🇿',
+        fact: 'أكبر دولة أفريقية من حيث المساحة، موطن جبال الأطلس والصحراء الكبرى'
+      },
+      {
+        id: 6,
+        name: 'السودان',
+        capital: 'الخرطوم',
+        population: '44 مليون',
+        currency: 'جنيه سوداني',
+        flag: '🇸🇩',
+        fact: 'موطن أهرام مروي ونوبة، يمر عبره نهر النيل الأزرق والأبيض'
+      },
+      {
+        id: 7,
+        name: 'تونس',
+        capital: 'تونس',
+        population: '12 مليون',
+        currency: 'دينار تونسي',
+        flag: '🇹🇳',
+        fact: 'موطن مدينة قرطاج التاريخية ومساجد الأندلسية المعمارية'
+      },
+      {
+        id: 8,
+        name: 'ليبيا',
+        capital: 'طرابلس',
+        population: '7 مليون',
+        currency: 'دينار ليبي',
+        flag: '🇱🇾',
+        fact: 'أطول ساحل أفريقي على البحر الأبيض المتوسط، موطن الصحراء الكبرى'
+      },
+      {
+        id: 9,
+        name: 'الصومال',
+        capital: 'مقديشو',
+        population: '16 مليون',
+        currency: 'شلن صومالي',
+        flag: '🇸🇴',
+        fact: 'أطول ساحل أفريقي على المحيط الهندي، موطن حضارة بونت القديمة'
+      },
+      {
+        id: 10,
+        name: 'إثيوبيا',
+        capital: 'أديس أبابا',
+        population: '120 مليون',
+        currency: 'بير إثيوبي',
+        flag: '🇪🇹',
+        fact: 'موطن حضارة أكسموم القديمة وأحد أقدم دول العالم المستقلة'
+      },
+      {
+        id: 11,
+        name: 'كينيا',
+        capital: 'نيروبي',
+        population: '54 مليون',
+        currency: 'شلن كيني',
+        flag: '🇰🇪',
+        fact: 'موطن السافانا والحياة البرية، مركز السياحة البيئية في شرق أفريقيا'
+      },
+      {
+        id: 12,
+        name: 'أوغندا',
+        capital: 'كمبالا',
+        population: '46 مليون',
+        currency: 'شلن أوغندي',
+        flag: '🇺🇬',
+        fact: 'تُعرف ببحيراتها الكثيرة وتنوعها البيولوجي الفريد'
+      },
+      {
+        id: 13,
+        name: 'غانا',
+        capital: 'أكرا',
+        population: '31 مليون',
+        currency: 'سيدي غاني',
+        flag: '🇬🇭',
+        fact: 'أول دولة إفريقية تستقل من الاستعمار البريطاني عام 1957'
+      },
+      {
+        id: 14,
+        name: 'كوت ديفوار',
+        capital: 'ياموسوكرو',
+        population: '27 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇨🇮',
+        fact: 'أكبر منتج لل Kakao في العالم، موطن شجرة الكاكاو'
+      },
+      {
+        id: 15,
+        name: 'السنغال',
+        capital: 'داكار',
+        population: '17 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇸🇳',
+        fact: 'موطن جزيرة غورée التاريخية ومدينة سانت لويس الاستعمارية'
+      },
+      {
+        id: 16,
+        name: 'مالي',
+        capital: 'باماكو',
+        population: '20 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇲🇱',
+        fact: 'موطن مدينة تومبوكتو التاريخية وحضارة مالي الإمبراطورية'
+      },
+      {
+        id: 17,
+        name: 'الكونغو الديمقراطية',
+        capital: 'كينشاسا',
+        population: '95 مليون',
+        currency: 'فرنك كونغولي',
+        flag: '🇨🇩',
+        fact: 'ثاني أكبر دولة إفريقية من حيث المساحة، موطن حوض الكونغو'
+      },
+      {
+        id: 18,
+        name: 'الكونغو',
+        capital: 'برازافيل',
+        population: '5.5 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇨🇬',
+        fact: 'موطن حوض الكونغو وتنوعه البيولوجي الفريد'
+      },
+      {
+        id: 19,
+        name: 'أنغولا',
+        capital: 'لواندا',
+        population: '33 مليون',
+        currency: 'كوانزا أنغولي',
+        flag: '🇦🇴',
+        fact: 'أكبر دولة في جنوب أفريقيا من حيث المساحة، موطن النفط'
+      },
+      {
+        id: 20,
+        name: 'موزمبيق',
+        capital: 'مابوتو',
+        population: '32 مليون',
+        currency: 'متكال موزمبيقي',
+        flag: '🇲🇿',
+        fact: 'موطن قناة موزمبيق الاستراتيجية وساحلها الطويل'
+      },
+      {
+        id: 21,
+        name: 'مدغشقر',
+        capital: 'أنتاناناريفو',
+        population: '28 مليون',
+        currency: 'أرياري مدغشقري',
+        flag: '🇲🇬',
+        fact: 'أكبر جزيرة في القارة الإفريقية، موطن أنواع فريدة من الحيوانات'
+      },
+      {
+        id: 22,
+        name: 'زيمبابوي',
+        capital: 'هراري',
+        population: '15 مليون',
+        currency: 'دولار زيمبابوي',
+        flag: '🇿🇼',
+        fact: 'موطن شلالات فيكتوريا وأحد أقدم الحضارات في أفريقيا'
+      },
+      {
+        id: 23,
+        name: 'زامبيا',
+        capital: 'لوساكا',
+        population: '19 مليون',
+        currency: 'كواشا زامبي',
+        flag: '🇿🇲',
+        fact: 'موطن شلالات فيكتوريا ونهر الزامبي'
+      },
+      {
+        id: 24,
+        name: 'رواندا',
+        capital: 'كيغالي',
+        population: '13 مليون',
+        currency: 'فرنك رواندي',
+        flag: '🇷🇼',
+        fact: 'تُعرف بـ"странة الألف تل" وتنوعها البيولوجي الفريد'
+      },
+      {
+        id: 25,
+        name: 'بوروندي',
+        capital: 'جيبوتي',
+        population: '12 مليون',
+        currency: 'فرنك بوروندي',
+        flag: '🇧🇮',
+        fact: 'أحد أصغر الدول الإفريقية، موطن البحيرات الجبلية'
+      },
+      {
+        id: 26,
+        name: 'توغو',
+        capital: 'لومي',
+        population: '8 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇹🇬',
+        fact: 'تُعرف بتنوعها الثقافي واللغوي الفريد'
+      },
+      {
+        id: 27,
+        name: 'بنين',
+        capital: 'بورتو نوفو',
+        population: '12 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇧🇯',
+        fact: 'موطن حضارة داهومي وقصر الملك غبيغاه'
+      },
+      {
+        id: 28,
+        name: 'بوركينا فاسو',
+        capital: 'واغادوغو',
+        population: '21 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇧🇫',
+        fact: 'تُعرف بثقافتها الشعبية والحرف اليدوية التقليدية'
+      },
+      {
+        id: 29,
+        name: 'غينيا',
+        capital: 'كوناكري',
+        population: '13 مليون',
+        currency: 'فرنك غيني',
+        flag: '🇬🇳',
+        fact: 'موطن غابات غينيا الاستوائية وتنوعها البيولوجي'
+      },
+      {
+        id: 30,
+        name: 'سيراليون',
+        capital: 'فريتاون',
+        population: '8 مليون',
+        currency: 'ليون سيراليوني',
+        flag: '🇸🇱',
+        fact: 'تُعرف بتنوعها المعدني وموارد الألماس'
+      },
+      {
+        id: 31,
+        name: 'ليبريا',
+        capital: 'مونروفيا',
+        population: '5 مليون',
+        currency: 'دولار ليبيري',
+        flag: '🇱🇷',
+        fact: 'الدولة الوحيدة في أفريقيا التي أسسها الأمريكيون'
+      },
+      {
+        id: 32,
+        name: 'الكاميرون',
+        capital: 'ياوندي',
+        population: '27 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇨🇲',
+        fact: 'تُعرف بتنوعها الثقافي واللغوي والمتنوع جغرافياً'
+      },
+      {
+        id: 33,
+        name: 'الجابون',
+        capital: 'ليبرفيل',
+        population: '2.2 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇬🇦',
+        fact: 'موطن الغابات الاستوائية والتنوع البيولوجي الفريد'
+      },
+      {
+        id: 34,
+        name: 'غينيا بيساو',
+        capital: 'بيساو',
+        population: '2 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇬🇼',
+        fact: 'أحد أصغر الدول الإفريقية، موطن الأرخبيلات الساحلية'
+      },
+      {
+        id: 35,
+        name: 'موريتانيا',
+        capital: 'نواكشوط',
+        population: '4.7 مليون',
+        currency: 'أوقية موريتانية',
+        flag: '🇲🇷',
+        fact: 'تُعرف بصحاراها وتراثها البدوي الغني'
+      },
+      {
+        id: 36,
+        name: 'النيجر',
+        capital: 'نيامي',
+        population: '25 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇳🇪',
+        fact: 'تُعرف بتنوعها الثقافي والتراث الأمازيغي الغني'
+      },
+      {
+        id: 37,
+        name: 'تشاد',
+        capital: 'نجامينا',
+        population: '16 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇹🇩',
+        fact: 'تُعرف بتنوعها الجغرافي من الصحاري إلى السافانا'
+      },
+      {
+        id: 38,
+        name: 'الصومال',
+        capital: 'مقديشو',
+        population: '16 مليون',
+        currency: 'شلن صومالي',
+        flag: '🇸🇴',
+        fact: 'أطول ساحل أفريقي على المحيط الهندي، موطن حضارة بونت القديمة'
+      },
+      {
+        id: 39,
+        name: 'جيبوتي',
+        capital: 'جيبوتي',
+        population: '1 مليون',
+        currency: 'فرنك جيبوتي',
+        flag: '🇩🇯',
+        fact: 'تُعرف بموقعها الاستراتيجي على مضيق باب المندب'
+      },
+      {
+        id: 40,
+        name: 'إريتريا',
+        capital: 'أسمرة',
+        population: '3.6 مليون',
+        currency: 'ناكفا إريتري',
+        flag: '🇪🇷',
+        fact: 'تُعرف بساحلها الطويل على البحر الأحمر وتاريخها المقاوم'
+      },
+      {
+        id: 41,
+        name: 'موريشيوس',
+        capital: 'بورت لويس',
+        population: '1.3 مليون',
+        currency: 'روبية موريشيوسية',
+        flag: '🇲🇺',
+        fact: 'جزيرة بركانية في المحيط الهندي، موطن أنواع فريدة من الطيور'
+      },
+      {
+        id: 42,
+        name: 'جزر القمر',
+        capital: 'موروني',
+        population: '870 ألف',
+        currency: 'فرنك قمري',
+        flag: '🇰🇲',
+        fact: 'أرخبيل بركاني في المحيط الهندي، موطن عطر الفانيل'
+      },
+      {
+        id: 43,
+        name: 'الرأس الأخضر',
+        capital: 'برايا',
+        population: '550 ألف',
+        flag: '🇨🇻',
+        fact: 'أرخبيل بركاني في المحيط الأطلسي، موطن الموسيقى الكريولية'
+      },
+      {
+        id: 44,
+        name: 'ساو تومي وبرينسيبي',
+        capital: 'ساو تومي',
+        population: '220 ألف',
+        currency: 'دوبرا',
+        flag: '🇸🇹',
+        fact: 'أرخبيل بركاني في خليج غينيا، موطن الشوكولاتة عالية الجودة'
+      },
+      {
+        id: 45,
+        name: 'سيشل',
+        capital: 'فيكتوريا',
+        population: '98 ألف',
+        currency: 'روبية سيشيلية',
+        flag: '🇸🇨',
+        fact: 'أرخبيل جرانيتي في المحيط الهندي، موطن جوز الهند الكسح'
+      },
+      {
+        id: 46,
+        name: 'غامبيا',
+        capital: 'بانجول',
+        population: '2.4 مليون',
+        currency: 'دالاسي غامبي',
+        flag: '🇬🇲',
+        fact: 'أصغر دولة في القارة الإفريقية، تقع على نهر غامبيا'
+      },
+      {
+        id: 47,
+        name: 'غينيا الاستوائية',
+        capital: 'مالابو',
+        population: '1.4 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇬🇶',
+        fact: 'الدولة الوحيدة في أفريقيا التي تتحدث اللغة الإسبانية رسمياً'
+      },
+      {
+        id: 48,
+        name: 'lesioto',
+        capital: 'ماسيرو',
+        population: '2.1 مليون',
+        currency: 'لوتي ليسوتو',
+        flag: '🇱🇸',
+        fact: 'دولة داخل جنوب أفريقيا، موطن الراقصين الوطنيين'
+      },
+      {
+        id: 49,
+        name: 'ملاوي',
+        capital: 'ليلونغوي',
+        population: '19 مليون',
+        currency: 'كواشا ملاوي',
+        flag: '🇲🇼',
+        fact: 'تُعرف ببحيرة ملاوي الكبرى وتنوعها البيولوجي الفريد'
+      },
+      {
+        id: 50,
+        name: 'ناميبيا',
+        capital: 'ويندهوك',
+        population: '2.5 مليون',
+        currency: 'دولار ناميبي',
+        flag: '🇳🇦',
+        fact: 'تُعرف بصحراء ناميبي الشهيرة وتنوعها البيولوجي الفريد'
+      },
+      {
+        id: 51,
+        name: 'النيجر',
+        capital: 'نيامي',
+        population: '25 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇳🇪',
+        fact: 'تُعرف بتنوعها الثقافي والتراث الأمازيغي الغني'
+      },
+      {
+        id: 52,
+        name: 'رواندا',
+        capital: 'كيغالي',
+        population: '13 مليون',
+        currency: 'فرنك رواندي',
+        flag: '🇷🇼',
+        fact: 'تُعرف بـ"странة الألف تل" وتنوعها البيولوجي الفريد'
+      },
+      {
+        id: 53,
+        name: 'السنغال',
+        capital: 'داكار',
+        population: '17 مليون',
+        currency: 'فرنك غرب أفريقي',
+        flag: '🇸🇳',
+        fact: 'موطن جزيرة غورée التاريخية ومدينة سانت لويس الاستعمارية'
+      },
+      {
+        id: 54,
+        name: 'سيراليون',
+        capital: 'فريتاون',
+        population: '8 مليون',
+        currency: 'ليون سيراليوني',
+        flag: '🇸🇱',
+        fact: 'تُعرف بتنوعها المعدني وموارد الألماس'
+      }
+    ];
+
+    // بيانات الإنجازات
+    const achievements = [
+      { id: 1, name: 'المستكشف الأول', description: 'استكشف قارة واحدة', points: 10, icon: '🌍' },
+      { id: 2, name: 'الباحث الماهر', description: 'استخدم البحث 5 مرات', points: 15, icon: '🔍' },
+      { id: 3, name: 'الطالب المجتهد', description: 'أجب عن 3 أسئلة صحيحة', points: 20, icon: '🎓' },
+      { id: 4, name: 'المفضلة', description: 'أضف 3 بطاقات إلى المفضلة', points: 25, icon: '⭐' },
+      { id: 5, name: 'الماجستير', description: 'احصل على 50 نقطة', points: 50, icon: '🏆' }
+    ];
+
+    // تهيئة المتغيرات
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+    let points = parseInt(localStorage.getItem('points')) || 0;
+    let searchCount = parseInt(localStorage.getItem('searchCount')) || 0;
+    let correctAnswers = parseInt(localStorage.getItem('correctAnswers')) || 0;
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements')) || [];
+
+    // عناصر DOM
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const searchInput = document.getElementById('searchInput');
+    const countriesGrid = document.getElementById('countriesGrid');
+    const pointsDisplay = document.getElementById('pointsValue');
+    const achievementsPanel = document.getElementById('achievementsPanel');
+    const achievementsList = document.getElementById('achievementsList');
+
+    // تطبيق الوضع الليلي إذا كان مفعلاً
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+      darkModeToggle.textContent = '☀️';
+    }
+
+    // تحديث عرض النقاط
+    function updatePoints() {
+      pointsDisplay.textContent = points;
+      localStorage.setItem('points', points);
+      checkAchievements();
+    }
+
+    // إضافة نقاط
+    function addPoints(amount) {
+      points += amount;
+      updatePoints();
+      showAchievementNotification(`حصلت على ${amount} نقاط!`);
+      
+      // تكامل مع App24
+      if (typeof App24 !== 'undefined') {
+        App24.addScore(amount);
+      }
+    }
+
+    // عرض إشعار الإنجاز
+    function showAchievementNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #3498db, #8AB4F8);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-weight: bold;
+        animation: slideDown 0.3s ease-out;
+      `;
+      
+      if (document.body.classList.contains('dark-mode')) {
+        notification.style.background = 'linear-gradient(45deg, #34A853, #81C995)';
+      }
+      
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // تحقق من الإنجازات
+    function checkAchievements() {
+      achievements.forEach(achievement => {
+        if (unlockedAchievements.includes(achievement.id)) return;
+        
+        let unlocked = false;
+        
+        switch(achievement.id) {
+          case 1:
+            unlocked = true; // تم فتحه تلقائياً
+            break;
+          case 2:
+            unlocked = searchCount >= 5;
+            break;
+          case 3:
+            unlocked = correctAnswers >= 3;
+            break;
+          case 4:
+            unlocked = favorites.length >= 3;
+            break;
+          case 5:
+            unlocked = points >= 50;
+            break;
+        }
+        
+        if (unlocked) {
+          unlockedAchievements.push(achievement.id);
+          localStorage.setItem('unlockedAchievements', JSON.stringify(unlockedAchievements));
+          showAchievementNotification(`🏆 إنجاز جديد: ${achievement.name}!`);
+          addPoints(achievement.points);
+          updateAchievementsPanel();
+        }
+      });
+    }
+
+    // تحديث لوحة الإنجازات
+    function updateAchievementsPanel() {
+      achievementsList.innerHTML = '';
+      achievements.forEach(achievement => {
+        const isUnlocked = unlockedAchievements.includes(achievement.id);
+        const achievementElement = document.createElement('div');
+        achievementElement.className = 'achievement-item';
+        achievementElement.innerHTML = `
+          <span class="achievement-icon">${isUnlocked ? achievement.icon : '🔒'}
+          
+
+            
+${achievement.name}
+
+            
+${achievement.description}</div>
+          </div>
+        `;
+        achievementsList.appendChild(achievementElement);
+      });
+    }
+
+    // تبديل الوضع الليلي
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      darkMode = !darkMode;
+      localStorage.setItem('darkMode', darkMode);
+      darkModeToggle.textContent = darkMode ? '☀️' : '🌙';
+      updateAchievementsPanel();
+    });
+
+    // إنشاء بطاقات الدول
+    function createCountryCards(countries = africanCountries) {
+      countriesGrid.innerHTML = '';
+      
+      if (countries.length === 0) {
+        const noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.textContent = 'لا توجد نتائج تطابق بحثك';
+        countriesGrid.appendChild(noResults);
+        return;
+      }
+      
+      countries.forEach(country => {
+        const isFavorited = favorites.includes(country.id);
+        const card = document.createElement('div');
+        card.className = 'country-card';
+        card.dataset.number = country.id;
+        card.innerHTML = `
+          <div class="country-header">
+            <div class="country-flag">${country.flag}
+
+            
+${country.name}</div>
+          </div>
+          <div class="country-info">
+            <div class="info-item">
+              <span class="info-label">العاصمة:</span>
+              <span class="info-value">${country.capital}
+            
+
+            
+
+              السكان:
+              ${country.population}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">العملة:</span>
+              <span class="info-value">${country.currency || 'غير متوفر'}
+            
+
+          
+
+          
+${country.fact} </div> `; countriesGrid.appendChild(card); }); } // تصفية الدول حسب البحث searchInput.addEventListener('input', () => { const searchTerm = searchInput.value.trim().toLowerCase(); searchCount++; localStorage.setItem('searchCount', searchCount); checkAchievements(); if (searchTerm === '') { createCountryCards(); return; } const filteredCountries = africanCountries.filter(country => { return ( country.name.toLowerCase().includes(searchTerm) || country.capital.toLowerCase().includes(searchTerm) || country.population.toLowerCase().includes(searchTerm) || (country.currency && country.currency.toLowerCase().includes(searchTerm)) || country.fact.toLowerCase().includes(searchTerm) ); }); createCountryCards(filteredCountries); }); // تهيئة التطبيق function init() { createCountryCards(); updatePoints(); updateAchievementsPanel(); // إظهار لوحة الإنجازات مؤقتاً setTimeout(() => { achievementsPanel.classList.add('show'); setTimeout(() => { achievementsPanel.classList.remove('show'); }, 5000); }, 1000); // تكامل مع App24 if (typeof App24 !== 'undefined') { App24.ready(() => { console.log('App24 is ready'); }); } } // بدء التطبيق init(); </script> </body> </html>
