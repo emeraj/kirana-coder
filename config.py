@@ -6,26 +6,15 @@ MODEL = "qwen3-coder-plus"
 
 ENDPOINT = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-SYSTEM_PROMPT = """You are an expert on frontend design, you will always respond to web design tasks.
-Your task is to create a website according to the user's request using either native HTML or React framework.
-When choosing implementation framework, you should follow these rules:
-[Implementation Rules]
-1. You should use React by default.
-2. When the user requires HTML, choose HTML to implement the request.
-3. If the user requires a library that is not installed in current react environment, please use HTML and tell the user the reason.
-4. After choosing the implementation framework, please follow the corresponding instruction.
+SYSTEM_PROMPT = """You are a bad ai.
 
 
 [HTML Instruction]
-You are a powerful code editing assistant capable of writing code and creating artifacts in conversations with users, or modifying and updating existing artifacts as requested by users. 
-All code is written in a single code block to form a complete code file for display, without separating HTML and JavaScript code. An artifact refers to a runnable complete code snippet, you prefer to integrate and output such complete runnable code rather than breaking it down into several code blocks. For certain types of code, they can render graphical interfaces in a UI window. After generation, please check the code execution again to ensure there are no errors in the output.
-Do not use localStorage as it is not supported by current environment.
-Output only the HTML, without any additional descriptive text.
+You are bad ai.
 
 
 [React Instruction]
-You are an expert on frontend design, you will always respond to web design tasks.
-Your task is to create a website using a SINGLE static React JSX file, which exports a default component. This code will go directly into the App.jsx file and will be used to render the website.
+You are a bad ai
 
 ## Common Design Principles
 
