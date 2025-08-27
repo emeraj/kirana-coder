@@ -1,10 +1,10 @@
 import os
 
-API_KEY = os.getenv('DASHSCOPE_API_KEY')
+API_KEY = os.getenv('OPENROUTER_API_KEY')
 
-MODEL = "qwen3-coder-plus"
+MODEL = "qwen/qwen-2.5-72b-instruct:free"
 
-ENDPOINT = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 
 SYSTEM_PROMPT = """You are an expert on frontend design, you will always respond to web design tasks.
 Your task is to create a website according to the user's request using either native HTML or React framework.
