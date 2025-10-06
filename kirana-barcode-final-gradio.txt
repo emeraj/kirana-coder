@@ -1,0 +1,2272 @@
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Minus, Printer, Save, FileText, Calendar, BarChart2, Download, X, Edit, Trash2, Package, ShoppingCart, Receipt, Home, Users, Settings, QrCode, Tag, Percent, PackagePlus, User, MapPin, CreditCard, Moon, Sun, UserCircle, Store } from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('billing');
+  const [theme, setTheme] = useState('light');
+  const [products, setProducts] = useState([
+    { id: 1, name: 'Parle-G Biscuits', barcode: '8901234567890', price: 10, gst: 18, stock: 100, category: 'Snacks' },
+    { id: 2, name: 'Dairy Milk Chocolate', barcode: '8901234567891', price: 20, gst: 12, stock: 50, category: 'Chocolates' },
+    { id: 3, name: 'Nescafe Coffee', barcode: '8901234567892', price: 180, gst: 18, stock: 30, category: 'Beverages' },
+    { id: 4, name: 'Amul Butter', barcode: '8901234567893', price: 45, gst: 5, stock: 40, category: 'Dairy' },
+    { id: 5, name: 'Colgate Toothpaste', barcode: '8901234567894', price: 85, gst: 18, stock: 60, category: 'Personal Care' }
+  ]);
+  
+  const [suppliers, setSuppliers] = useState([
+    { id: 1, name: 'ABC Distributors', address: '123 Main Street, Mumbai', gstNo: '27AABCCDDEEFFG', openingBalance: 5000, balanceType: 'Credit' },
+    { id: 2, name: 'XYZ Wholesalers', address: '456 Market Road, Delhi', gstNo: '07XYZPQRST1234Z', openingBalance: 2500, balanceType: 'Credit' }
+  ]);
+  
+  const [categories, setCategories] = useState([
+    { id: 1, name: 'Snacks' },
+    { id: 2, name: 'Chocolates' },
+    { id: 3, name: 'Beverages' },
+    { id: 4, name: 'Dairy' },
+    { id: 5, name: 'Personal Care' }
+  ]);
+  
+  const [gstRates, setGstRates] = useState([
+    { id: 1, rate: 5, description: 'Dairy Products' },
+    { id: 2, rate: 12, description: 'Chocolates & Confectionery' },
+    { id: 3, rate: 18, description: 'General Goods' },
+    { id: 4, rate: 28, description: 'Luxury Items' }
+  ]);
+  
+  const [cart, setCart] = useState([]);
+  const [purchaseCart, setPurchaseCart] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [purchaseSearchTerm, setPurchaseSearchTerm] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState(1001);
+  const [purchaseInvoiceNumber, setPurchaseInvoiceNumber] = useState(2001);
+  const [customerName, setCustomerName] = useState('');
+  const [supplierName, setSupplierName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [supplierPhone, setSupplierPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [purchasePaymentMethod, setPurchasePaymentMethod] = useState('cash');
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [showPurchaseInvoice, setShowPurchaseInvoice] = useState(false);
+  const [salesReport, setSalesReport] = useState([]);
+  const [purchaseReport, setPurchaseReport] = useState([]);
+  const [dayBook, setDayBook] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newProduct, setNewProduct] = useState({ name: '', barcode: '', price: '', gst: 18, stock: '', category: 'Snacks' });
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showLabelPrint, setShowLabelPrint] = useState(false);
+  const [selectedProductForLabel, setSelectedProductForLabel] = useState(null);
+  const [labelQuantity, setLabelQuantity] = useState(1);
+  const [productSearchTerm, setProductSearchTerm] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newGstRate, setNewGstRate] = useState({ rate: '', description: '' });
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingGstRate, setEditingGstRate] = useState(null);
+  const [newSupplier, setNewSupplier] = useState({ name: '', address: '', gstNo: '', openingBalance: '', balanceType: 'Credit' });
+  const [editingSupplier, setEditingSupplier] = useState(null);
+  const [supplierSearchTerm, setSupplierSearchTerm] = useState('');
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [settingsTab, setSettingsTab] = useState('theme');
+  const [shopProfile, setShopProfile] = useState({
+    shopName: 'SHREE GANESH TRADERS',
+    ownerName: 'Rajesh Kumar',
+    address: '123 Main Street, Mumbai, Maharashtra',
+    phone: '9876543210',
+    email: 'info@shreeganeshtraders.com',
+    gstin: '27AABCCDDEEFFG'
+  });
+  const [mastersTab, setMastersTab] = useState('products');
+
+  // Mock data storage (since localStorage is not available)
+  const [mockStorage, setMockStorage] = useState({
+    products: [
+      { id: 1, name: 'Parle-G Biscuits', barcode: '8901234567890', price: 10, gst: 18, stock: 100, category: 'Snacks' },
+      { id: 2, name: 'Dairy Milk Chocolate', barcode: '8901234567891', price: 20, gst: 12, stock: 50, category: 'Chocolates' },
+      { id: 3, name: 'Nescafe Coffee', barcode: '8901234567892', price: 180, gst: 18, stock: 30, category: 'Beverages' },
+      { id: 4, name: 'Amul Butter', barcode: '8901234567893', price: 45, gst: 5, stock: 40, category: 'Dairy' },
+      { id: 5, name: 'Colgate Toothpaste', barcode: '8901234567894', price: 85, gst: 18, stock: 60, category: 'Personal Care' }
+    ],
+    suppliers: [
+      { id: 1, name: 'ABC Distributors', address: '123 Main Street, Mumbai', gstNo: '27AABCCDDEEFFG', openingBalance: 5000, balanceType: 'Credit' },
+      { id: 2, name: 'XYZ Wholesalers', address: '456 Market Road, Delhi', gstNo: '07XYZPQRST1234Z', openingBalance: 2500, balanceType: 'Credit' }
+    ],
+    categories: [
+      { id: 1, name: 'Snacks' },
+      { id: 2, name: 'Chocolates' },
+      { id: 3, name: 'Beverages' },
+      { id: 4, name: 'Dairy' },
+      { id: 5, name: 'Personal Care' }
+    ],
+    gstRates: [
+      { id: 1, rate: 5, description: 'Dairy Products' },
+      { id: 2, rate: 12, description: 'Chocolates & Confectionery' },
+      { id: 3, rate: 18, description: 'General Goods' },
+      { id: 4, rate: 28, description: 'Luxury Items' }
+    ],
+    salesReport: [],
+    purchaseReport: [],
+    dayBook: [],
+    invoiceNumber: 1001,
+    purchaseInvoiceNumber: 2001
+  });
+
+  // Initialize data
+  useEffect(() => {
+    // In a real app, this would load from localStorage
+    setProducts(mockStorage.products);
+    setSuppliers(mockStorage.suppliers);
+    setCategories(mockStorage.categories);
+    setGstRates(mockStorage.gstRates);
+    setSalesReport(mockStorage.salesReport);
+    setPurchaseReport(mockStorage.purchaseReport);
+    setDayBook(mockStorage.dayBook);
+    setInvoiceNumber(mockStorage.invoiceNumber);
+    setPurchaseInvoiceNumber(mockStorage.purchaseInvoiceNumber);
+  }, []);
+
+  // Theme effect
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    if (existingItem) {
+      setCart(cart.map(item => 
+        item.id === product.id 
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }]);
+    }
+  };
+
+  const addToPurchaseCart = (product) => {
+    const existingItem = purchaseCart.find(item => item.id === product.id);
+    if (existingItem) {
+      setPurchaseCart(purchaseCart.map(item => 
+        item.id === product.id 
+          ? { ...item, quantity: item.quantity + 1, purchasePrice: item.purchasePrice || item.price }
+          : item
+      ));
+    } else {
+      setPurchaseCart([...purchaseCart, { ...product, quantity: 1, purchasePrice: product.price }]);
+    }
+  };
+
+  const updateQuantity = (id, quantity, isPurchase = false) => {
+    if (isPurchase) {
+      if (quantity <= 0) {
+        setPurchaseCart(purchaseCart.filter(item => item.id !== id));
+      } else {
+        setPurchaseCart(purchaseCart.map(item => 
+          item.id === id ? { ...item, quantity } : item
+        ));
+      }
+    } else {
+      if (quantity <= 0) {
+        setCart(cart.filter(item => item.id !== id));
+      } else {
+        setCart(cart.map(item => 
+          item.id === id ? { ...item, quantity } : item
+        ));
+      }
+    }
+  };
+
+  const updatePurchasePrice = (id, purchasePrice) => {
+    setPurchaseCart(purchaseCart.map(item => 
+      item.id === id ? { ...item, purchasePrice: parseFloat(purchasePrice) || 0 } : item
+    ));
+  };
+
+  const removeFromCart = (id, isPurchase = false) => {
+    if (isPurchase) {
+      setPurchaseCart(purchaseCart.filter(item => item.id !== id));
+    } else {
+      setCart(cart.filter(item => item.id !== id));
+    }
+  };
+
+  const calculateTotals = (items) => {
+    let subtotal = 0;
+    let totalGST = 0;
+    let totalAmount = 0;
+
+    items.forEach(item => {
+      const itemTotal = (item.purchasePrice || item.price) * item.quantity;
+      const gstAmount = (itemTotal * item.gst) / 100;
+      subtotal += itemTotal;
+      totalGST += gstAmount;
+      totalAmount += itemTotal + gstAmount;
+    });
+
+    return { subtotal, totalGST, totalAmount };
+  };
+
+  const processPayment = () => {
+    if (cart.length === 0) return;
+
+    const { subtotal, totalGST, totalAmount } = calculateTotals(cart);
+    const sale = {
+      id: Date.now(),
+      invoiceNumber,
+      date: new Date().toLocaleDateString('en-IN'),
+      time: new Date().toLocaleTimeString('en-IN'),
+      customerName,
+      customerPhone,
+      items: [...cart],
+      subtotal,
+      totalGST,
+      totalAmount,
+      paymentMethod,
+      type: 'sale'
+    };
+
+    const updatedSalesReport = [...salesReport, sale];
+    const updatedDayBook = [...dayBook, sale];
+    const updatedInvoiceNumber = invoiceNumber + 1;
+
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      salesReport: updatedSalesReport,
+      dayBook: updatedDayBook,
+      invoiceNumber: updatedInvoiceNumber
+    }));
+
+    setSalesReport(updatedSalesReport);
+    setDayBook(updatedDayBook);
+    setInvoiceNumber(updatedInvoiceNumber);
+    setCart([]);
+    setCustomerName('');
+    setCustomerPhone('');
+    setShowInvoice(true);
+    setCurrentInvoice(sale);
+  };
+
+  const processPurchase = () => {
+    if (purchaseCart.length === 0) return;
+
+    const { subtotal, totalGST, totalAmount } = calculateTotals(purchaseCart);
+    const purchase = {
+      id: Date.now(),
+      invoiceNumber: purchaseInvoiceNumber,
+      date: new Date().toLocaleDateString('en-IN'),
+      time: new Date().toLocaleTimeString('en-IN'),
+      supplierName: selectedSupplier ? selectedSupplier.name : supplierName,
+      supplierPhone,
+      supplier: selectedSupplier,
+      items: [...purchaseCart],
+      subtotal,
+      totalGST,
+      totalAmount,
+      paymentMethod: purchasePaymentMethod,
+      type: 'purchase'
+    };
+
+    // Update product stock
+    const updatedProducts = products.map(product => {
+      const purchasedItem = purchaseCart.find(item => item.id === product.id);
+      if (purchasedItem) {
+        return {
+          ...product,
+          stock: product.stock + purchasedItem.quantity,
+          price: purchasedItem.purchasePrice || product.price
+        };
+      }
+      return product;
+    });
+
+    const updatedPurchaseReport = [...purchaseReport, purchase];
+    const updatedPurchaseInvoiceNumber = purchaseInvoiceNumber + 1;
+
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      products: updatedProducts,
+      purchaseReport: updatedPurchaseReport,
+      purchaseInvoiceNumber: updatedPurchaseInvoiceNumber
+    }));
+
+    setProducts(updatedProducts);
+    setPurchaseReport(updatedPurchaseReport);
+    setPurchaseInvoiceNumber(updatedPurchaseInvoiceNumber);
+    setPurchaseCart([]);
+    setSupplierName('');
+    setSupplierPhone('');
+    setSelectedSupplier(null);
+    setShowPurchaseInvoice(true);
+    setCurrentPurchaseInvoice(purchase);
+  };
+
+  const [currentInvoice, setCurrentInvoice] = useState(null);
+  const [currentPurchaseInvoice, setCurrentPurchaseInvoice] = useState(null);
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.barcode.includes(searchTerm) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredProductsForPurchase = products.filter(product =>
+    product.name.toLowerCase().includes(purchaseSearchTerm.toLowerCase()) ||
+    product.barcode.includes(purchaseSearchTerm) ||
+    product.category.toLowerCase().includes(purchaseSearchTerm.toLowerCase())
+  );
+
+  const filteredProductsForInventory = products.filter(product =>
+    product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+    product.barcode.includes(productSearchTerm) ||
+    product.category.toLowerCase().includes(productSearchTerm.toLowerCase())
+  );
+
+  const filteredSuppliers = suppliers.filter(supplier =>
+    supplier.name.toLowerCase().includes(supplierSearchTerm.toLowerCase()) ||
+    supplier.gstNo.includes(supplierSearchTerm)
+  );
+
+  const addProduct = () => {
+    if (newProduct.name && newProduct.price && newProduct.gst) {
+      const product = {
+        id: Date.now(),
+        ...newProduct,
+        price: parseFloat(newProduct.price),
+        gst: parseFloat(newProduct.gst),
+        stock: parseInt(newProduct.stock) || 0
+      };
+      
+      const updatedProducts = [...products, product];
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        products: updatedProducts
+      }));
+      
+      setProducts(updatedProducts);
+      setNewProduct({ name: '', barcode: '', price: '', gst: 18, stock: '', category: 'Snacks' });
+    }
+  };
+
+  const updateProduct = () => {
+    if (editingProduct) {
+      const updatedProducts = products.map(p => 
+        p.id === editingProduct.id ? editingProduct : p
+      );
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        products: updatedProducts
+      }));
+      
+      setProducts(updatedProducts);
+      setEditingProduct(null);
+    }
+  };
+
+  const deleteProduct = (id) => {
+    const updatedProducts = products.filter(p => p.id !== id);
+    
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      products: updatedProducts
+    }));
+    
+    setProducts(updatedProducts);
+  };
+
+  const addSupplier = () => {
+    if (newSupplier.name && newSupplier.address) {
+      const supplier = {
+        id: Date.now(),
+        ...newSupplier,
+        openingBalance: parseFloat(newSupplier.openingBalance) || 0
+      };
+      
+      const updatedSuppliers = [...suppliers, supplier];
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        suppliers: updatedSuppliers
+      }));
+      
+      setSuppliers(updatedSuppliers);
+      setNewSupplier({ name: '', address: '', gstNo: '', openingBalance: '', balanceType: 'Credit' });
+    }
+  };
+
+  const updateSupplier = () => {
+    if (editingSupplier) {
+      const updatedSuppliers = suppliers.map(s => 
+        s.id === editingSupplier.id ? editingSupplier : s
+      );
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        suppliers: updatedSuppliers
+      }));
+      
+      setSuppliers(updatedSuppliers);
+      setEditingSupplier(null);
+    }
+  };
+
+  const deleteSupplier = (id) => {
+    const updatedSuppliers = suppliers.filter(s => s.id !== id);
+    
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      suppliers: updatedSuppliers
+    }));
+    
+    setSuppliers(updatedSuppliers);
+  };
+
+  const addCategory = () => {
+    if (newCategory.trim()) {
+      const category = {
+        id: Date.now(),
+        name: newCategory.trim()
+      };
+      
+      const updatedCategories = [...categories, category];
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        categories: updatedCategories
+      }));
+      
+      setCategories(updatedCategories);
+      setNewCategory('');
+    }
+  };
+
+  const updateCategory = () => {
+    if (editingCategory) {
+      const updatedCategories = categories.map(c => 
+        c.id === editingCategory.id ? editingCategory : c
+      );
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        categories: updatedCategories
+      }));
+      
+      setCategories(updatedCategories);
+      setEditingCategory(null);
+    }
+  };
+
+  const deleteCategory = (id) => {
+    const updatedCategories = categories.filter(c => c.id !== id);
+    
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      categories: updatedCategories
+    }));
+    
+    setCategories(updatedCategories);
+  };
+
+  const addGstRate = () => {
+    if (newGstRate.rate && newGstRate.description.trim()) {
+      const gstRate = {
+        id: Date.now(),
+        rate: parseFloat(newGstRate.rate),
+        description: newGstRate.description.trim()
+      };
+      
+      const updatedGstRates = [...gstRates, gstRate];
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        gstRates: updatedGstRates
+      }));
+      
+      setGstRates(updatedGstRates);
+      setNewGstRate({ rate: '', description: '' });
+    }
+  };
+
+  const updateGstRate = () => {
+    if (editingGstRate) {
+      const updatedGstRates = gstRates.map(g => 
+        g.id === editingGstRate.id ? editingGstRate : g
+      );
+      
+      // Update mock storage
+      setMockStorage(prev => ({
+        ...prev,
+        gstRates: updatedGstRates
+      }));
+      
+      setGstRates(updatedGstRates);
+      setEditingGstRate(null);
+    }
+  };
+
+  const deleteGstRate = (id) => {
+    const updatedGstRates = gstRates.filter(g => g.id !== id);
+    
+    // Update mock storage
+    setMockStorage(prev => ({
+      ...prev,
+      gstRates: updatedGstRates
+    }));
+    
+    setGstRates(updatedGstRates);
+  };
+
+  const exportToExcel = (data, filename) => {
+    if (data.length === 0) return;
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + Object.keys(data[0]).join(",") + "\n"
+      + data.map(row => Object.values(row).join(",")).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${filename}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getDailySales = () => {
+    return dayBook.filter(sale => sale.date === new Date(selectedDate).toLocaleDateString('en-IN'));
+  };
+
+  const openLabelPrint = (product) => {
+    setSelectedProductForLabel(product);
+    setLabelQuantity(1);
+    setShowLabelPrint(true);
+  };
+
+  const printLabels = () => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Product Labels</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+          }
+          .label-container {
+            width: 50mm;
+            height: 25mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #000;
+            box-sizing: border-box;
+            padding: 2mm;
+          }
+          .company-name {
+            font-size: 8pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+            line-height: 1.1;
+          }
+          .barcode-container {
+            margin: 1mm 0;
+            width: 100%;
+          }
+          .barcode-bars {
+            height: 20px;
+            margin-bottom: 1mm;
+            width: 100%;
+          }
+          .product-name {
+            font-size: 7pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+            line-height: 1.1;
+            max-height: 14px;
+            overflow: hidden;
+          }
+          .sale-rate {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-top: 1mm;
+          }
+          @media print {
+            @page {
+              size: 50mm 25mm;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+    `);
+    
+    for (let i = 0; i < labelQuantity; i++) {
+      printWindow.document.write(`
+        <div class="label-container">
+          <div class="company-name">${shopProfile.shopName}</div>
+          <img src="https://barcode.tec-it.com/barcode.ashx?data=${selectedProductForLabel.barcode}&code=Code128&translate-esc=false&unit=Fit&dpi=96&imagetype=Gif&rotation=0&color=%23000000&bgcolor=%23ffffff&qunit=Mm&quiet=0" alt="Barcode" class="barcode-bars">
+          <div class="product-name">${selectedProductForLabel.name}</div>
+          <div class="sale-rate">₹${selectedProductForLabel.price}</div>
+        </div>
+      `);
+    }
+    
+    printWindow.document.write(`
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  const updateShopProfile = () => {
+    // In a real app, this would save to localStorage or a database
+    alert('Shop profile updated successfully!');
+  };
+
+  const renderBilling = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Product Search and List */}
+      <div className="lg:col-span-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <div className="flex items-center mb-4">
+            <Search className="text-gray-400 mr-2" size={20} />
+            <input
+              type="text"
+              placeholder="Search products by name, category or barcode..."
+              className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+            {filteredProducts.map(product => (
+              <div key={product.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900" onClick={() => addToCart(product)}>
+                <h3 className="font-semibold text-gray-800 dark:text-white">{product.name}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Category: {product.category}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Barcode: {product.barcode}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">₹{product.price}</span>
+                  <span className="text-sm text-green-600 dark:text-green-400">{product.gst}% GST</span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Stock: {product.stock}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Cart and Payment */}
+      <div className="space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+            <ShoppingCart className="mr-2 text-blue-500" size={20} />
+            Shopping Cart
+          </h2>
+          
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {cart.map(item => (
+              <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm text-gray-800 dark:text-white">{item.name}</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">₹{item.price} × {item.quantity}</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button 
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="p-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 rounded-full hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-8 text-center font-medium text-gray-800 dark:text-white">{item.quantity}</span>
+                  <button 
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
+                  >
+                    <Plus size={14} />
+                  </button>
+                  <button 
+                    onClick={() => removeFromCart(item.id)}
+                    className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {cart.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                  <span>Subtotal:</span>
+                  <span>₹{calculateTotals(cart).subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                  <span>GST:</span>
+                  <span>₹{calculateTotals(cart).totalGST.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg text-gray-800 dark:text-white">
+                  <span>Total:</span>
+                  <span>₹{calculateTotals(cart).totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Customer and Payment Details */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <h3 className="font-bold mb-4 text-gray-800 dark:text-white">Customer Details</h3>
+          <input
+            type="text"
+            placeholder="Customer Name"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Phone Number"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+          />
+          
+          <h3 className="font-bold mb-3 text-gray-800 dark:text-white">Payment Method</h3>
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {['cash', 'card', 'upi', 'credit'].map(method => (
+              <button
+                key={method}
+                className={`p-2 rounded-lg border transition-all ${
+                  paymentMethod === method 
+                    ? 'bg-blue-500 text-white border-blue-500 shadow-md' 
+                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:shadow-sm'
+                }`}
+                onClick={() => setPaymentMethod(method)}
+              >
+                {method.charAt(0).toUpperCase() + method.slice(1)}
+              </button>
+            ))}
+          </div>
+          
+          <button
+            onClick={processPayment}
+            disabled={cart.length === 0}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center justify-center transition-all shadow-lg"
+          >
+            <Printer className="mr-2" size={20} />
+            Process Payment (₹{calculateTotals(cart).totalAmount.toFixed(2)})
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPurchase = () => (
+    <div className="space-y-6">
+      {/* Supplier Selection */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+          <User className="mr-2 text-blue-500" size={20} />
+          Select Supplier
+        </h2>
+        <div className="flex items-center mb-4">
+          <Search className="text-gray-400 mr-2" size={20} />
+          <input
+            type="text"
+            placeholder="Search suppliers by name or GST number..."
+            className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            value={supplierSearchTerm}
+            onChange={(e) => setSupplierSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg mb-4">
+          {filteredSuppliers.map(supplier => (
+            <div 
+              key={supplier.id} 
+              className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all ${
+                selectedSupplier && selectedSupplier.id === supplier.id 
+                  ? 'bg-blue-100 dark:bg-blue-900' 
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              onClick={() => setSelectedSupplier(supplier)}
+            >
+              <h3 className="font-semibold text-gray-800 dark:text-white">{supplier.name}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{supplier.address}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">GST: {supplier.gstNo}</p>
+              <p className="text-sm text-gray-800 dark:text-white">
+                Opening Balance: ₹{supplier.openingBalance} ({supplier.balanceType})
+              </p>
+            </div>
+          ))}
+        </div>
+        
+        {selectedSupplier && (
+          <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900 dark:to-emerald-900 rounded-lg">
+            <h4 className="font-bold text-gray-800 dark:text-white">Selected Supplier:</h4>
+            <p className="text-gray-800 dark:text-white">{selectedSupplier.name}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{selectedSupplier.address}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">GST: {selectedSupplier.gstNo}</p>
+            <button 
+              onClick={() => setSelectedSupplier(null)}
+              className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+            >
+              Clear Selection
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Product Search and Purchase Cart */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Product Search and List */}
+        <div className="lg:col-span-2">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-4">
+              <Search className="text-gray-400 mr-2" size={20} />
+              <input
+                type="text"
+                placeholder="Search products by name, category or barcode..."
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                value={purchaseSearchTerm}
+                onChange={(e) => setPurchaseSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+              {filteredProductsForPurchase.map(product => (
+                <div key={product.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900" onClick={() => addToPurchaseCart(product)}>
+                  <h3 className="font-semibold text-gray-800 dark:text-white">{product.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Category: {product.category}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Barcode: {product.barcode}</p>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">₹{product.price}</span>
+                    <span className="text-sm text-green-600 dark:text-green-400">{product.gst}% GST</span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Stock: {product.stock}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Purchase Cart and Payment */}
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+              <PackagePlus className="mr-2 text-blue-500" size={20} />
+              Purchase Cart
+            </h2>
+            
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {purchaseCart.map(item => (
+                <div key={item.id} className="flex flex-col p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-sm text-gray-800 dark:text-white">{item.name}</h4>
+                    <button 
+                      onClick={() => removeFromCart(item.id, true)}
+                      className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">Qty:</span>
+                    <div className="flex items-center space-x-1">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity - 1, true)}
+                        className="p-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 rounded-full hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                      >
+                        <Minus size={12} />
+                      </button>
+                      <span className="w-8 text-center text-sm text-gray-800 dark:text-white">{item.quantity}</span>
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity + 1, true)}
+                        className="p-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
+                      >
+                        <Plus size={12} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">Price:</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      className="w-20 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm dark:bg-gray-600 dark:text-white"
+                      value={item.purchasePrice || item.price}
+                      onChange={(e) => updatePurchasePrice(item.id, e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {purchaseCart.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                    <span>Subtotal:</span>
+                    <span>₹{calculateTotals(purchaseCart).subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                    <span>GST:</span>
+                    <span>₹{calculateTotals(purchaseCart).totalGST.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg text-gray-800 dark:text-white">
+                    <span>Total:</span>
+                    <span>₹{calculateTotals(purchaseCart).totalAmount.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Supplier and Payment Details */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            {!selectedSupplier && (
+              <>
+                <h3 className="font-bold mb-4 text-gray-800 dark:text-white">Supplier Details</h3>
+                <input
+                  type="text"
+                  placeholder="Supplier Name"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={supplierName}
+                  onChange={(e) => setSupplierName(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={supplierPhone}
+                  onChange={(e) => setSupplierPhone(e.target.value)}
+                />
+              </>
+            )}
+            
+            <h3 className="font-bold mb-3 text-gray-800 dark:text-white">Payment Method</h3>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {['cash', 'card', 'upi', 'credit'].map(method => (
+                <button
+                  key={method}
+                  className={`p-2 rounded-lg border transition-all ${
+                    purchasePaymentMethod === method 
+                      ? 'bg-blue-500 text-white border-blue-500 shadow-md' 
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:shadow-sm'
+                  }`}
+                  onClick={() => setPurchasePaymentMethod(method)}
+                >
+                  {method.charAt(0).toUpperCase() + method.slice(1)}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={processPurchase}
+              disabled={purchaseCart.length === 0 || (!selectedSupplier && !supplierName)}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center justify-center transition-all shadow-lg"
+            >
+              <Save className="mr-2" size={20} />
+              Process Purchase (₹{calculateTotals(purchaseCart).totalAmount.toFixed(2)})
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMasters = () => (
+    <div className="space-y-6">
+      {/* Masters Navigation */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+          <button
+            onClick={() => setMastersTab('products')}
+            className={`px-4 py-2 font-medium ${
+              mastersTab === 'products'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Products
+          </button>
+          <button
+            onClick={() => setMastersTab('suppliers')}
+            className={`px-4 py-2 font-medium ${
+              mastersTab === 'suppliers'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Ledger Master
+          </button>
+          <button
+            onClick={() => setMastersTab('categories')}
+            className={`px-4 py-2 font-medium ${
+              mastersTab === 'categories'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Product Categories
+          </button>
+          <button
+            onClick={() => setMastersTab('gst')}
+            className={`px-4 py-2 font-medium ${
+              mastersTab === 'gst'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            GST Rates
+          </button>
+        </div>
+
+        {/* Products Tab */}
+        {mastersTab === 'products' && (
+          <div className="space-y-6">
+            {/* Add Product Form */}
+            <div>
+              <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+                <Plus className="mr-2 text-blue-500" size={20} />
+                Add New Product
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <input
+                  type="text"
+                  placeholder="Product Name"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                />
+                <input
+                  type="text"
+                  placeholder="Barcode"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.barcode}
+                  onChange={(e) => setNewProduct({...newProduct, barcode: e.target.value})}
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                />
+                <select
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.gst}
+                  onChange={(e) => setNewProduct({...newProduct, gst: e.target.value})}
+                >
+                  <option value="">Select GST Rate</option>
+                  {gstRates.map(rate => (
+                    <option key={rate.id} value={rate.rate}>{rate.rate}% - {rate.description}</option>
+                  ))}
+                </select>
+                <select
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.category}
+                  onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.name}>{category.name}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  placeholder="Stock"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newProduct.stock}
+                  onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                />
+              </div>
+              <button
+                onClick={addProduct}
+                className="mt-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center transition-all shadow-md"
+              >
+                <Save className="mr-2" size={16} />
+                Add Product
+              </button>
+            </div>
+
+            {/* Products List with Search */}
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold flex items-center text-gray-800 dark:text-white">
+                  <Package className="mr-2 text-blue-500" size={20} />
+                  Product Inventory
+                </h2>
+                <div className="flex items-center">
+                  <Search className="text-gray-400 mr-2" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={productSearchTerm}
+                    onChange={(e) => setProductSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Name</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Category</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Barcode</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Price</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">GST %</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Stock</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProductsForInventory.map(product => (
+                      <tr key={product.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td className="p-3 text-gray-800 dark:text-white">{product.name}</td>
+                        <td className="p-3 text-gray-800 dark:text-white">{product.category}</td>
+                        <td className="p-3 text-gray-800 dark:text-white">{product.barcode}</td>
+                        <td className="p-3 text-gray-800 dark:text-white">₹{product.price}</td>
+                        <td className="p-3 text-gray-800 dark:text-white">{product.gst}%</td>
+                        <td className="p-3 text-gray-800 dark:text-white">{product.stock}</td>
+                        <td className="p-3">
+                          <button
+                            onClick={() => openLabelPrint(product)}
+                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2 transition-colors"
+                            title="Print Label"
+                          >
+                            <QrCode size={16} />
+                          </button>
+                          <button
+                            onClick={() => setEditingProduct({...product})}
+                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2 transition-colors"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => deleteProduct(product.id)}
+                            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Edit Product Modal */}
+            {editingProduct && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl">
+                  <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">Edit Product</h3>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Product Name"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.name}
+                      onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Barcode"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.barcode}
+                      onChange={(e) => setEditingProduct({...editingProduct, barcode: e.target.value})}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.price}
+                      onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})}
+                    />
+                    <select
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.gst}
+                      onChange={(e) => setEditingProduct({...editingProduct, gst: parseFloat(e.target.value)})}
+                    >
+                      <option value="">Select GST Rate</option>
+                      {gstRates.map(rate => (
+                        <option key={rate.id} value={rate.rate}>{rate.rate}% - {rate.description}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.category}
+                      onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map(category => (
+                        <option key={category.id} value={category.name}>{category.name}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      placeholder="Stock"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      value={editingProduct.stock}
+                      onChange={(e) => setEditingProduct({...editingProduct, stock: parseInt(e.target.value)})}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      onClick={() => setEditingProduct(null)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={updateProduct}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Suppliers Tab */}
+        {mastersTab === 'suppliers' && (
+          <div className="space-y-6">
+            {/* Add New Supplier */}
+            <div>
+              <h3 className="font-bold mb-4 text-gray-800 dark:text-white">Add New Supplier</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Supplier Name"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newSupplier.name}
+                  onChange={(e) => setNewSupplier({...newSupplier, name: e.target.value})}
+                />
+                <textarea
+                  placeholder="Address"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newSupplier.address}
+                  onChange={(e) => setNewSupplier({...newSupplier, address: e.target.value})}
+                  rows="2"
+                />
+                <input
+                  type="text"
+                  placeholder="GST Number"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newSupplier.gstNo}
+                  onChange={(e) => setNewSupplier({...newSupplier, gstNo: e.target.value})}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="number"
+                    placeholder="Opening Balance"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={newSupplier.openingBalance}
+                    onChange={(e) => setNewSupplier({...newSupplier, openingBalance: e.target.value})}
+                  />
+                  <select
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={newSupplier.balanceType}
+                    onChange={(e) => setNewSupplier({...newSupplier, balanceType: e.target.value})}
+                  >
+                    <option value="Credit">Credit</option>
+                    <option value="Debit">Debit</option>
+                  </select>
+                </div>
+                <button
+                  onClick={addSupplier}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center justify-center transition-all shadow-md"
+                >
+                  <Plus className="mr-2" size={16} />
+                  Add Supplier
+                </button>
+              </div>
+            </div>
+            
+            {/* Suppliers List */}
+            <div>
+              <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+                <User className="mr-2 text-blue-500" size={20} />
+                Suppliers Ledger Master
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Name</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Address</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">GST Number</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Opening Balance</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Balance Type</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {suppliers.map(supplier => (
+                      <tr key={supplier.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <input
+                              type="text"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingSupplier.name}
+                              onChange={(e) => setEditingSupplier({...editingSupplier, name: e.target.value})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{supplier.name}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <textarea
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingSupplier.address}
+                              onChange={(e) => setEditingSupplier({...editingSupplier, address: e.target.value})}
+                              rows="2"
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{supplier.address}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <input
+                              type="text"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingSupplier.gstNo}
+                              onChange={(e) => setEditingSupplier({...editingSupplier, gstNo: e.target.value})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{supplier.gstNo}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <input
+                              type="number"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingSupplier.openingBalance}
+                              onChange={(e) => setEditingSupplier({...editingSupplier, openingBalance: parseFloat(e.target.value) || 0})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">₹{supplier.openingBalance}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <select
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingSupplier.balanceType}
+                              onChange={(e) => setEditingSupplier({...editingSupplier, balanceType: e.target.value})}
+                            >
+                              <option value="Credit">Credit</option>
+                              <option value="Debit">Debit</option>
+                            </select>
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{supplier.balanceType}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingSupplier && editingSupplier.id === supplier.id ? (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={updateSupplier}
+                                className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingSupplier(null)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => setEditingSupplier({...supplier})}
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteSupplier(supplier.id)}
+                                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Categories Tab */}
+        {mastersTab === 'categories' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+                <Tag className="mr-2 text-blue-500" size={20} />
+                Product Categories
+              </h2>
+              <div className="flex mb-4">
+                <input
+                  type="text"
+                  placeholder="New Category Name"
+                  className="flex-1 border border-gray-300 dark:border-gray-600 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                />
+                <button
+                  onClick={addCategory}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-r-lg hover:from-blue-600 hover:to-indigo-700 flex items-center transition-all"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Category Name</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categories.map(category => (
+                      <tr key={category.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td className="p-3">
+                          {editingCategory && editingCategory.id === category.id ? (
+                            <input
+                              type="text"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingCategory.name}
+                              onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{category.name}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingCategory && editingCategory.id === category.id ? (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={updateCategory}
+                                className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingCategory(null)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => setEditingCategory({...category})}
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteCategory(category.id)}
+                                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* GST Rates Tab */}
+        {mastersTab === 'gst' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+                <Percent className="mr-2 text-blue-500" size={20} />
+                GST Rates
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <input
+                  type="number"
+                  placeholder="GST Rate (%)"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newGstRate.rate}
+                  onChange={(e) => setNewGstRate({...newGstRate, rate: e.target.value})}
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={newGstRate.description}
+                  onChange={(e) => setNewGstRate({...newGstRate, description: e.target.value})}
+                />
+                <button
+                  onClick={addGstRate}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center justify-center transition-all"
+                >
+                  <Plus className="mr-2" size={16} />
+                  Add GST Rate
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">GST Rate (%)</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Description</th>
+                      <th className="text-left p-3 text-gray-800 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gstRates.map(rate => (
+                      <tr key={rate.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td className="p-3">
+                          {editingGstRate && editingGstRate.id === rate.id ? (
+                            <input
+                              type="number"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingGstRate.rate}
+                              onChange={(e) => setEditingGstRate({...editingGstRate, rate: parseFloat(e.target.value)})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{rate.rate}%</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingGstRate && editingGstRate.id === rate.id ? (
+                            <input
+                              type="text"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              value={editingGstRate.description}
+                              onChange={(e) => setEditingGstRate({...editingGstRate, description: e.target.value})}
+                            />
+                          ) : (
+                            <span className="text-gray-800 dark:text-white">{rate.description}</span>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          {editingGstRate && editingGstRate.id === rate.id ? (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={updateGstRate}
+                                className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingGstRate(null)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => setEditingGstRate({...rate})}
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteGstRate(rate.id)}
+                                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderReports = () => (
+    <div className="space-y-6">
+      {/* Purchase Report */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold flex items-center text-gray-800 dark:text-white">
+            <PackagePlus className="mr-2 text-blue-500" size={20} />
+            Purchase Report
+          </h2>
+          <button
+            onClick={() => exportToExcel(purchaseReport, 'purchase_report')}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 flex items-center transition-all shadow-md"
+          >
+            <Download className="mr-2" size={16} />
+            Export to Excel
+          </button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Invoice #</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Date</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Supplier</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Items</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Subtotal</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">GST</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Total</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {purchaseReport.map(purchase => (
+                <tr key={purchase.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <td className="p-3 text-gray-800 dark:text-white">#{purchase.invoiceNumber}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{purchase.date}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{purchase.supplierName || 'Unknown Supplier'}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{purchase.items.length}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">₹{purchase.subtotal.toFixed(2)}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">₹{purchase.totalGST.toFixed(2)}</td>
+                  <td className="p-3 font-bold text-gray-800 dark:text-white">₹{purchase.totalAmount.toFixed(2)}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      purchase.paymentMethod === 'cash' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                      purchase.paymentMethod === 'card' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                      purchase.paymentMethod === 'upi' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                    }`}>
+                      {purchase.paymentMethod.toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Sales Report */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold flex items-center text-gray-800 dark:text-white">
+            <BarChart2 className="mr-2 text-blue-500" size={20} />
+            Sales Report
+          </h2>
+          <button
+            onClick={() => exportToExcel(salesReport, 'sales_report')}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 flex items-center transition-all shadow-md"
+          >
+            <Download className="mr-2" size={16} />
+            Export to Excel
+          </button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Invoice #</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Date</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Customer</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Items</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Subtotal</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">GST</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Total</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {salesReport.map(sale => (
+                <tr key={sale.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <td className="p-3 text-gray-800 dark:text-white">#{sale.invoiceNumber}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{sale.date}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{sale.customerName || 'Walk-in Customer'}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{sale.items.length}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">₹{sale.subtotal.toFixed(2)}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">₹{sale.totalGST.toFixed(2)}</td>
+                  <td className="p-3 font-bold text-gray-800 dark:text-white">₹{sale.totalAmount.toFixed(2)}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      sale.paymentMethod === 'cash' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                      sale.paymentMethod === 'card' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                      sale.paymentMethod === 'upi' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                    }`}>
+                      {sale.paymentMethod.toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Day Book */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold flex items-center text-gray-800 dark:text-white">
+            <FileText className="mr-2 text-blue-500" size={20} />
+            Day Book
+          </h2>
+          <div className="flex items-center space-x-3">
+            <input
+              type="date"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+            <button
+              onClick={() => exportToExcel(getDailySales(), `day_book_${selectedDate}`)}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 flex items-center transition-all shadow-md"
+            >
+              <Download className="mr-2" size={16} />
+              Export
+            </button>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Time</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Invoice #</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Type</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Customer/Supplier</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Items</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Amount</th>
+                <th className="text-left p-3 text-gray-800 dark:text-white">Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getDailySales().map(transaction => (
+                <tr key={transaction.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <td className="p-3 text-gray-800 dark:text-white">{transaction.time}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">#{transaction.invoiceNumber}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      transaction.type === 'sale' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                    }`}>
+                      {transaction.type === 'sale' ? 'Sale' : 'Purchase'}
+                    </span>
+                  </td>
+                  <td className="p-3 text-gray-800 dark:text-white">{transaction.customerName || transaction.supplierName || 'Walk-in Customer'}</td>
+                  <td className="p-3 text-gray-800 dark:text-white">{transaction.items.length}</td>
+                  <td className="p-3 font-bold text-gray-800 dark:text-white">₹{transaction.totalAmount.toFixed(2)}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      transaction.paymentMethod === 'cash' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                      transaction.paymentMethod === 'card' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                      transaction.paymentMethod === 'upi' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                    }`}>
+                      {transaction.paymentMethod.toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSettings = () => (
+    <div className="space-y-6">
+      {/* Settings Navigation */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setSettingsTab('theme')}
+            className={`px-4 py-2 font-medium ${
+              settingsTab === 'theme'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Theme
+          </button>
+          <button
+            onClick={() => setSettingsTab('profile')}
+            className={`px-4 py-2 font-medium ${
+              settingsTab === 'profile'
+                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            Shop Profile
+          </button>
+        </div>
+
+        {/* Theme Settings */}
+        {settingsTab === 'theme' && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Select Theme</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div
+                onClick={() => setTheme('light')}
+                className={`border-2 rounded-xl p-6 cursor-pointer transition-all transform hover:scale-105 ${
+                  theme === 'light'
+                    ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 shadow-lg'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
+              >
+                <div className="flex items-center mb-3">
+                  <Sun className="text-yellow-500 mr-3" size={28} />
+                  <h4 className="font-bold text-gray-800 dark:text-white text-lg">Light Theme</h4>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Bright and clean interface with white backgrounds</p>
+                <div className="mt-4 flex space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-white border border-gray-300"></div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500"></div>
+                  <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+                </div>
+              </div>
+              <div
+                onClick={() => setTheme('dark')}
+                className={`border-2 rounded-xl p-6 cursor-pointer transition-all transform hover:scale-105 ${
+                  theme === 'dark'
+                    ? 'border-blue-500 bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
+              >
+                <div className="flex items-center mb-3">
+                  <Moon className="text-indigo-400 mr-3" size={28} />
+                  <h4 className="font-bold text-gray-800 dark:text-white text-lg">Dark Theme</h4>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Easy on the eyes with dark backgrounds</p>
+                <div className="mt-4 flex space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-gray-800 border border-gray-700"></div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500"></div>
+                  <div className="w-6 h-6 rounded-full bg-gray-700"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile Settings */}
+        {settingsTab === 'profile' && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Shop Profile</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shop Name</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={shopProfile.shopName}
+                  onChange={(e) => setShopProfile({...shopProfile, shopName: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Owner Name</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={shopProfile.ownerName}
+                  onChange={(e) => setShopProfile({...shopProfile, ownerName: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+                <textarea
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  rows="3"
+                  value={shopProfile.address}
+                  onChange={(e) => setShopProfile({...shopProfile, address: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={shopProfile.phone}
+                    onChange={(e) => setShopProfile({...shopProfile, phone: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                  <input
+                    type="email"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    value={shopProfile.email}
+                    onChange={(e) => setShopProfile({...shopProfile, email: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GSTIN</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  value={shopProfile.gstin}
+                  onChange={(e) => setShopProfile({...shopProfile, gstin: e.target.value})}
+                />
+              </div>
+              <button
+                onClick={updateShopProfile}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center transition-all shadow-md"
+              >
+                <Save className="mr-2" size={16} />
+                Update Profile
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderInvoice = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md max-h-screen overflow-y-auto shadow-2xl">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{shopProfile.shopName}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{shopProfile.address}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">GSTIN: {shopProfile.gstin}</p>
+          <div className="border-t border-gray-300 dark:border-gray-700 my-3"></div>
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+            <span>Invoice #{currentInvoice?.invoiceNumber}</span>
+            <span>{currentInvoice?.date} {currentInvoice?.time}</span>
+          </div>
+          {currentInvoice?.customerName && (
+            <div className="text-sm mt-2 text-gray-800 dark:text-white">
+              <p>Customer: {currentInvoice.customerName}</p>
+              {currentInvoice.customerPhone && <p>Phone: {currentInvoice.customerPhone}</p>}
+            </div>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-300 dark:border-gray-700">
+                <th className="text-left pb-1 text-gray-800 dark:text-white">Item</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Qty</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Rate</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentInvoice?.items.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+                  <td className="py-1">
+                    <div className="font-medium text-gray-800 dark:text-white">{item.name}</div>
+                    <div className="text-gray-500 dark:text-gray-400 text-xs">GST {item.gst}%</div>
+                  </td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">{item.quantity}</td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">₹{item.price.toFixed(2)}</td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">₹{(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="border-t border-gray-300 dark:border-gray-700 pt-2">
+          <div className="flex justify-between text-sm mb-1 text-gray-600 dark:text-gray-300">
+            <span>Subtotal:</span>
+            <span>₹{currentInvoice?.subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm mb-1 text-gray-600 dark:text-gray-300">
+            <span>GST:</span>
+            <span>₹{currentInvoice?.totalGST.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-bold text-lg mt-2 text-gray-800 dark:text-white">
+            <span>Total:</span>
+            <span>₹{currentInvoice?.totalAmount.toFixed(2)}</span>
+          </div>
+          <div className="text-sm mt-2 text-gray-600 dark:text-gray-300">
+            <p>Payment Method: {currentInvoice?.paymentMethod.toUpperCase()}</p>
+          </div>
+        </div>
+
+        <div className="text-center mt-6 text-xs text-gray-600 dark:text-gray-400">
+          <p>Thank you for shopping with us!</p>
+          <p>This is a computer generated invoice</p>
+        </div>
+
+        <div className="flex justify-center space-x-3 mt-6">
+          <button
+            onClick={() => window.print()}
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center transition-all shadow-md"
+          >
+            <Printer className="mr-2" size={16} />
+            Print
+          </button>
+          <button
+            onClick={() => setShowInvoice(false)}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPurchaseInvoice = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md max-h-screen overflow-y-auto shadow-2xl">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{shopProfile.shopName}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{shopProfile.address}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">GSTIN: {shopProfile.gstin}</p>
+          <div className="border-t border-gray-300 dark:border-gray-700 my-3"></div>
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+            <span>Purchase Invoice #{currentPurchaseInvoice?.invoiceNumber}</span>
+            <span>{currentPurchaseInvoice?.date} {currentPurchaseInvoice?.time}</span>
+          </div>
+          {currentPurchaseInvoice?.supplierName && (
+            <div className="text-sm mt-2 text-gray-800 dark:text-white">
+              <p>Supplier: {currentPurchaseInvoice.supplierName}</p>
+              {currentPurchaseInvoice.supplierPhone && <p>Phone: {currentPurchaseInvoice.supplierPhone}</p>}
+              {currentPurchaseInvoice.supplier && (
+                <>
+                  <p>{currentPurchaseInvoice.supplier.address}</p>
+                  <p>GST: {currentPurchaseInvoice.supplier.gstNo}</p>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-300 dark:border-gray-700">
+                <th className="text-left pb-1 text-gray-800 dark:text-white">Item</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Qty</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Rate</th>
+                <th className="text-right pb-1 text-gray-800 dark:text-white">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPurchaseInvoice?.items.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+                  <td className="py-1">
+                    <div className="font-medium text-gray-800 dark:text-white">{item.name}</div>
+                    <div className="text-gray-500 dark:text-gray-400 text-xs">GST {item.gst}%</div>
+                  </td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">{item.quantity}</td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">₹{item.purchasePrice.toFixed(2)}</td>
+                  <td className="text-right py-1 text-gray-800 dark:text-white">₹{(item.purchasePrice * item.quantity).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="border-t border-gray-300 dark:border-gray-700 pt-2">
+          <div className="flex justify-between text-sm mb-1 text-gray-600 dark:text-gray-300">
+            <span>Subtotal:</span>
+            <span>₹{currentPurchaseInvoice?.subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm mb-1 text-gray-600 dark:text-gray-300">
+            <span>GST:</span>
+            <span>₹{currentPurchaseInvoice?.totalGST.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-bold text-lg mt-2 text-gray-800 dark:text-white">
+            <span>Total:</span>
+            <span>₹{currentPurchaseInvoice?.totalAmount.toFixed(2)}</span>
+          </div>
+          <div className="text-sm mt-2 text-gray-600 dark:text-gray-300">
+            <p>Payment Method: {currentPurchaseInvoice?.paymentMethod.toUpperCase()}</p>
+          </div>
+        </div>
+
+        <div className="text-center mt-6 text-xs text-gray-600 dark:text-gray-400">
+          <p>Stock updated successfully!</p>
+          <p>This is a computer generated purchase receipt</p>
+        </div>
+
+        <div className="flex justify-center space-x-3 mt-6">
+          <button
+            onClick={() => setShowPurchaseInvoice(false)}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLabelPrint = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md shadow-2xl">
+        <h3 className="text-lg font-bold mb-4 flex items-center text-gray-800 dark:text-white">
+          <QrCode className="mr-2 text-blue-500" size={20} />
+          Print Product Labels (50mm x 25mm)
+        </h3>
+        
+        {selectedProductForLabel && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-lg">
+            <h4 className="font-medium text-gray-800 dark:text-white">{selectedProductForLabel.name}</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Barcode: {selectedProductForLabel.barcode}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Price: ₹{selectedProductForLabel.price}</p>
+          </div>
+        )}
+        
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Number of Labels</label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={labelQuantity}
+            onChange={(e) => setLabelQuantity(Math.max(1, Math.min(100, parseInt(e.target.value) || 1)))}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={() => setShowLabelPrint(false)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={printLabels}
+            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 flex items-center transition-all shadow-md"
+          >
+            <Printer className="mr-2" size={16} />
+            Print Labels
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <Store className="text-blue-500 mr-3" size={32} />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Easy-Retail</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <UserCircle className="mr-2" size={18} />
+                {shopProfile.ownerName}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-white dark:bg-gray-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-8 overflow-x-auto py-2">
+            {[
+              { id: 'billing', label: 'Billing', icon: ShoppingCart },
+              { id: 'purchase', label: 'Purchase', icon: PackagePlus },
+              { id: 'masters', label: 'Masters', icon: User },
+              { id: 'reports', label: 'Reports', icon: BarChart2 },
+              { id: 'settings', label: 'Settings', icon: Settings }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                <tab.icon className="mr-2" size={18} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'billing' && renderBilling()}
+        {activeTab === 'purchase' && renderPurchase()}
+        {activeTab === 'masters' && renderMasters()}
+        {activeTab === 'reports' && renderReports()}
+        {activeTab === 'settings' && renderSettings()}
+      </main>
+
+      {/* Invoice Modal */}
+      {showInvoice && renderInvoice()}
+      
+      {/* Purchase Invoice Modal */}
+      {showPurchaseInvoice && renderPurchaseInvoice()}
+      
+      {/* Label Print Modal */}
+      {showLabelPrint && renderLabelPrint()}
+    </div>
+  );
+};
+
+export default App;
